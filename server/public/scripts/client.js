@@ -24,6 +24,28 @@ function deleteTheBook() {
 
 }
 
+function bookRead() {
+  let id = $(this).closest('tr').data('id');
+  let isTransfered = $(this).closest('tr').data('ready');
+
+  if (isTransfered === true || isTransfered === null) {
+    isTransfered = false;
+  } else if (isTransfered === false) {
+    isTransfered = true;
+  }
+
+  $.ajax({
+    url: `/books/${id}`,
+    type: 'PUT',
+    data: { transferData: isTransfered }
+  }).then(function (response) {
+    refreshBooks()
+  }).catch(function (error) {
+    console.log('error in GET', error);
+  });
+
+}
+
 function handleSubmit() {
   console.log('Submit button clicked.');
   let book = {};
