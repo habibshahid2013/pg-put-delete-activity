@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const booksRouter = require('./routes/book.router.js');
+const pool = require('./modules/pool')
+
 
 const app = express();
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/books', booksRouter);
 
