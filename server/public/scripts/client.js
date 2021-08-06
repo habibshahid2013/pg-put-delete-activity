@@ -39,9 +39,10 @@ function deleteTheBook() {
 
 function bookRead() {
   $.ajax({
-    url: `/books/bookread/${$(this).parents('tr').data('id')}`,
+    url: `/books/book-read/${$(this).parents('tr').data('id')}`,
     type: 'PUT',
   }).then(function (response) {
+    console.log(response);
     refreshBooks(); //refresh book list 
   }).catch(function (error) {
     console.log('error in PUT', error);
