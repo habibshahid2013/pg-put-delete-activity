@@ -2,7 +2,9 @@ $(document).ready(function () {
   console.log('jQuery sourced.');
   refreshBooks();
   addClickHandlers();
+  
 });
+let books = []
 
 function addClickHandlers() {
   $('#submitBtn').on('click', handleSubmit);
@@ -16,30 +18,31 @@ function deleteTheBook() {
   $.ajax({
     type: 'DELETE',
     url: `/books/${bookID}`,
-  }).then(function (res) {
+  }).then(function (response) {
     console.log('😆');
     renderBooks();
 
-  })
+  }).catch(function(error){
+    console.log('Error in delete', error);
+});
+} //end Delete
+  
+  // let id = $(this).closest('tr').data('id');
+  // let isTransfered = $(this).closest('tr').data('ready');
 
-}
+  // if (isTransfered === true || isTransfered === null) {
+  //   isTransfered = false;
+  // } else if (isTransfered === false) {
+  //   isTransfered = true;
+  // }
 
 function bookRead() {
-  let id = $(this).closest('tr').data('id');
-  let isTransfered = $(this).closest('tr').data('ready');
-
-  if (isTransfered === true || isTransfered === null) {
-    isTransfered = false;
-  } else if (isTransfered === false) {
-    isTransfered = true;
-  }
-
   $.ajax({
-    url: `/books/${id}`,
+    url: `/books/toggle-read/${$(this).parents('tr').data('id')}`,
     type: 'PUT',
     data: { transferData: isTransfered }
   }).then(function (response) {
-    refreshBooks()
+    refreshBooks(); //refresh book list 
   }).catch(function (error) {
     console.log('error in GET', error);
   });
@@ -62,7 +65,7 @@ function addBook(bookToAdd) {
     data: bookToAdd,
   }).then(function (response) {
     console.log('Response from server.', response);
-    refreshBooks();
+    renderBooks(bookToAdd)
   }).catch(function (error) {
     console.log('Error in POST', error)
     alert('Unable to add book at this time. Please try again later.');
@@ -92,9 +95,11 @@ function renderBooks(books) {
     // For each book, append a new row to our table
     $('#bookShelf').append(`
       <tr>
-      <tr data-id=${books[i].id}>
+      <tr data-id=${books.id}>
         <td>${book.title}</td>
         <td>${book.author}</td>
+         <td><button class="toggleRead">${book.isRead ? 'Have Read' : 'Needs Reading' }</button></td>
+        <td><button id="deleteBtn">Delete</button></td>
       </tr>
     `);
   }
