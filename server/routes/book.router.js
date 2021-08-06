@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-
+const bodyParser = require('body-parser');
 const pool = require('./modules/pool');
-const bodyParser = require('body-parser')
+const pg = require('pg');
+const app = express();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Get all books
 router.get('/', (req, res) => {
