@@ -2,13 +2,14 @@ $(document).ready(function () {
   console.log('jQuery sourced.');
   refreshBooks();
   addClickHandlers();
+  $('#bookShelf').on('click', '.bookRead', bookRead)
+  $('#bookShelf').on('click', '#deleteBtn', deleteTheBook)
   
 });
 let books = []
 
 function addClickHandlers() {
   $('#submitBtn').on('click', handleSubmit);
-  $('#bookShelf').on('click', '#deleteBtn', deleteTheBook)
   // TODO - Add code for edit & delete buttons
 }
 
@@ -20,7 +21,7 @@ function deleteTheBook() {
     url: `/books/${bookID}`,
   }).then(function (response) {
     console.log('😆');
-    renderBooks();
+    refreshBooks();
 
   }).catch(function(error){
     console.log('Error in delete', error);
@@ -38,13 +39,12 @@ function deleteTheBook() {
 
 function bookRead() {
   $.ajax({
-    url: `/books/toggle-read/${$(this).parents('tr').data('id')}`,
+    url: `/books/bookread/${$(this).parents('tr').data('id')}`,
     type: 'PUT',
-    data: { transferData: isTransfered }
   }).then(function (response) {
     refreshBooks(); //refresh book list 
   }).catch(function (error) {
-    console.log('error in GET', error);
+    console.log('error in PUT', error);
   });
 
 }
@@ -65,7 +65,7 @@ function addBook(bookToAdd) {
     data: bookToAdd,
   }).then(function (response) {
     console.log('Response from server.', response);
-    renderBooks(bookToAdd)
+    refreshBooks(bookToAdd)
   }).catch(function (error) {
     console.log('Error in POST', error)
     alert('Unable to add book at this time. Please try again later.');
@@ -98,7 +98,7 @@ function renderBooks(books) {
       <tr data-id=${books.id}>
         <td>${book.title}</td>
         <td>${book.author}</td>
-         <td><button class="toggleRead">${book.isRead ? 'Have Read' : 'Needs Reading' }</button></td>
+         <td><button class="bookRead">${book.isRead ? 'Have Read' : 'Needs Reading' }</button></td>
         <td><button id="deleteBtn">Delete</button></td>
       </tr>
     `);

@@ -26,46 +26,45 @@ bookRouter.get('/', (req, res) => {
 // Adds a new book to the list of awesome reads
 // Request body must be a book object with a title and author.
 bookRouter.post('/', (req, res) => {
-  let newBook = req.body;
-  console.log(`Adding book`, newBook);
+    let newBook = req.body;
+    console.log(`Adding book`, newBook);
 
-  let queryText = `UPDATE "books" SET "isRead" = NOT "isRead" WHERE "id" = $1`;
-  pool.query(queryText, [newBook.author, newBook.title])
-      .then(result => {
-      res.sendStatus(201);
-    })
-    .catch(error => {
-      console.log(`Error adding new book`, error);
-      res.sendStatus(500);
-    });
-});
+    let queryText = `INSERT INTO "books" ("author", "title")
+                    VALUES ($1, $2);`;
+    pool.query(queryText, [newBook.author, newBook.title])
+        .then(result => {
+        res.sendStatus(201);
+      })
+      .catch(error => {
+        console.log(`Error adding new book`, error);
+        res.sendStatus(500);
+      });
+  });
 
 // TODO - PUT
 // Updates a book to show that it has been read
 // Request must include a parameter indicating what book to update - the id
 // Request body must include the content to update - the status
 
-bookRouter.put('/:id', (req, res) => {
+bookRouter.put('/book-read/:id', (req, res) => {
   // console.log('params', req.params);
-  console.log('ready param', req.body.transferData);
+  console.log('ready param', req.params.id);
   // let ready = req.params.ready;
   // console.log('ready variable check', ready);
   let sqlQuery = `
-    UPDATE book SET "isRead" =$1 WHERE id = $2;
+   UPDATE "books" SET "isRead" = NOT "isRead" WHERE "id" = $1
   `;
 
-  let sqlParams = [
-    req.body.transferData, // $1
-    req.params.id  // $2
-  ]
-  console.log('Wjat is this', sqlParams);
+  let sqlParams = [ req.params.id] //$1
+
+  console.log('What is this', sqlParams);
   
   pool.query(sqlQuery, sqlParams)
-    .then((dbRes) => {
+      .then((dbRes) => {
       res.send(201);
     })
-    .catch((err) => {
-      console.log("post error", err);
+      .catch((err) => {
+        console.log("post error", err);
       res.sendStatus(500);
     });
 });
@@ -74,18 +73,18 @@ bookRouter.put('/:id', (req, res) => {
 // Removes a book to show that it has been read
 // Request must include a parameter indicating what book to update - the id
 bookRouter.delete('/:id', (req, res) => {
-  const idToDelete = req.params.id
-  let sqlQuery = 'DELETE FROM "books" WHERE id=$1;'
-  let sqlParams = [idToDelete]
-  pool.query(sqlQuery, sqlParams)
-    .then((dbRes) => {
-      res.sendStatus(200)
+    const idToDelete = req.params.id
+    let sqlQuery = 'DELETE FROM "books" WHERE id=$1;'
+    let sqlParams = [idToDelete]
+    pool.query(sqlQuery, sqlParams)
+      .then((dbRes) => {
+        res.sendStatus(200)
 
-    })
-    .catch((err) => {
-      console.log('DELETE error', err);
-      res.sendStatus(200)
-    })
-})
+      })
+      .catch((err) => {
+        console.log('DELETE error', err);
+        res.sendStatus(200)
+      })
+  })
 
-module.exports = bookRouter;
+  module.exports = bookRouter;
