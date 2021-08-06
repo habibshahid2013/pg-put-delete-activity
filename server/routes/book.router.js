@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const pool = require('../modules/pool');
+const pool = require('./modules/pool');
+const bodyParser = require('body-parser')
 
 // Get all books
 router.get('/', (req, res) => {
@@ -10,15 +11,15 @@ router.get('/', (req, res) => {
     // Sends back the results in an object
     res.send(result.rows);
   })
-  .catch(error => {
-    console.log('error getting books', error);
-    res.sendStatus(500);
-  });
+    .catch(error => {
+      console.log('error getting books', error);
+      res.sendStatus(500);
+    });
 });
 
 // Adds a new book to the list of awesome reads
 // Request body must be a book object with a title and author.
-router.post('/',  (req, res) => {
+router.post('/', (req, res) => {
   let newBook = req.body;
   console.log(`Adding book`, newBook);
 
@@ -43,6 +44,19 @@ router.post('/',  (req, res) => {
 // TODO - DELETE 
 // Removes a book to show that it has been read
 // Request must include a parameter indicating what book to update - the id
+router.delete('/:id', (req, res) => {
+  const idToDelete = req.params.id
+  let sqlQuery = 'DELETE FROM "books" WHERE id=$1;'
+  let sqlParams = [idToDelete]
+  pool.query(sqlQuery, sqlParams)
+    .then((dbRes) => {
+      res.sendStatus(200)
 
+    })
+    .catch((err) => {
+      console.log('DELETE error', err);
+      res.sendStatus(200)
+    })
+})
 
 module.exports = router;
